@@ -21,6 +21,9 @@ RUN apk add --no-cache \
     libstdc++ \
     zlib
 
+# Create a non-root user for running the GitHub Actions runner
+RUN adduser -D -u 1000 runner
+
 # Set up runner directory
 RUN mkdir -p /runner && chmod 755 /runner
 WORKDIR /runner
@@ -40,7 +43,8 @@ RUN RUNNER_VERSION=$(curl -s https://api.github.com/repos/actions/runner/release
     echo "Downloading runner for architecture: ${RUNNER_ARCH}" && \
     curl -o actions-runner.tar.gz -L "https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-${RUNNER_ARCH}-${RUNNER_VERSION}.tar.gz" && \
     tar xzf actions-runner.tar.gz && \
-    rm actions-runner.tar.gz
+    rm actions-runner.tar.gz && \
+    chown -R runner:runner /runner
 
 # Copy run script
 COPY run.sh /

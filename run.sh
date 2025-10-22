@@ -24,19 +24,22 @@ bashio::log.info "Repository URL: ${REPO_URL}"
 # Change to runner directory
 cd /runner
 
-# Configure the runner
+# Ensure runner user owns the directory
+chown -R runner:runner /runner
+
+# Configure the runner as the runner user
 bashio::log.info "Configuring GitHub Actions Runner..."
-./config.sh --url "${REPO_URL}" --token "${RUNNER_TOKEN}" --unattended --replace
+su runner -c "./config.sh --url \"${REPO_URL}\" --token \"${RUNNER_TOKEN}\" --unattended --replace"
 
 # Cleanup function
 cleanup() {
     bashio::log.info "Removing runner..."
-    ./config.sh remove --token "${RUNNER_TOKEN}"
+    su runner -c "./config.sh remove --token \"${RUNNER_TOKEN}\""
 }
 
 # Set trap to cleanup on exit
 trap cleanup EXIT
 
-# Start the runner
+# Start the runner as the runner user
 bashio::log.info "Starting runner..."
-./run.sh
+su runner -c "./run.sh"
