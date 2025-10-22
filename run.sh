@@ -7,6 +7,7 @@ bashio::log.info "Starting GitHub Actions Runner..."
 CONFIG_FILE="/data/options.json"
 REPO_URL=$(jq -r '.repo_url // empty' "$CONFIG_FILE")
 RUNNER_TOKEN=$(jq -r '.runner_token // empty' "$CONFIG_FILE")
+RUNNER_NAME=$(jq -r '.runner_name // empty' "$CONFIG_FILE")
 DEBUG_LOGGING=$(jq -r '.debug_logging // false' "$CONFIG_FILE")
 
 # Enable debug logging if requested
@@ -68,20 +69,39 @@ chown -R runner:runner /runner
 
 # Configure the runner as the runner user
 bashio::log.info "Configuring GitHub Actions Runner..."
-if ! su runner -c "./config.sh --url \"${REPO_URL}\" --token \"${RUNNER_TOKEN}\" --unattended --replace"; then
-    bashio::log.error "Failed to configure runner. Common causes:"
-    bashio::log.error "  1. Registration token expired (valid for 1 hour only)"
-    bashio::log.error "  2. Invalid repository URL format"
-    bashio::log.error "  3. Insufficient permissions for the repository/organization"
-    bashio::log.error "  4. Network connectivity issues"
-    bashio::log.error ""
-    bashio::log.error "To fix:"
-    bashio::log.error "  1. Go to GitHub → Your Repo → Settings → Actions → Runners"
-    bashio::log.error "  2. Click 'New self-hosted runner'"
-    bashio::log.error "  3. Copy the NEW registration token shown"
-    bashio::log.error "  4. Update the add-on configuration with the new token"
-    bashio::log.error "  5. Restart the add-on"
-    exit 1
+if [ -n "$RUNNER_NAME" ]; then
+    bashio::log.info "Using custom runner name: ${RUNNER_NAME}"
+    if ! su runner -c "./config.sh --url \"${REPO_URL}\" --token \"${RUNNER_TOKEN}\" --name \"${RUNNER_NAME}\" --unattended --replace"; then
+        bashio::log.error "Failed to configure runner. Common causes:"
+        bashio::log.error "  1. Registration token expired (valid for 1 hour only)"
+        bashio::log.error "  2. Invalid repository URL format"
+        bashio::log.error "  3. Insufficient permissions for the repository/organization"
+        bashio::log.error "  4. Network connectivity issues"
+        bashio::log.error ""
+        bashio::log.error "To fix:"
+        bashio::log.error "  1. Go to GitHub → Your Repo → Settings → Actions → Runners"
+        bashio::log.error "  2. Click 'New self-hosted runner'"
+        bashio::log.error "  3. Copy the NEW registration token shown"
+        bashio::log.error "  4. Update the add-on configuration with the new token"
+        bashio::log.error "  5. Restart the add-on"
+        exit 1
+    fi
+else
+    if ! su runner -c "./config.sh --url \"${REPO_URL}\" --token \"${RUNNER_TOKEN}\" --unattended --replace"; then
+        bashio::log.error "Failed to configure runner. Common causes:"
+        bashio::log.error "  1. Registration token expired (valid for 1 hour only)"
+        bashio::log.error "  2. Invalid repository URL format"
+        bashio::log.error "  3. Insufficient permissions for the repository/organization"
+        bashio::log.error "  4. Network connectivity issues"
+        bashio::log.error ""
+        bashio::log.error "To fix:"
+        bashio::log.error "  1. Go to GitHub → Your Repo → Settings → Actions → Runners"
+        bashio::log.error "  2. Click 'New self-hosted runner'"
+        bashio::log.error "  3. Copy the NEW registration token shown"
+        bashio::log.error "  4. Update the add-on configuration with the new token"
+        bashio::log.error "  5. Restart the add-on"
+        exit 1
+    fi
 fi
 
 # Cleanup function

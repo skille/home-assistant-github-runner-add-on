@@ -16,6 +16,25 @@
 - Added token length to debug logging output for better diagnostics
 - Enhanced configuration documentation with explicit notes about token expiration and format
 
+## [1.0.6] - 2025-10-22
+
+### Added
+- Mandatory version bump enforcement for all commits to main branch
+- GitHub Actions workflow (`version-bump-check.yml`) to automatically verify version bumps on PRs
+- CONTRIBUTING.md with comprehensive contribution guidelines and version bump requirements
+- Enhanced documentation in COPILOT_GUIDELINES.md with critical version bump policy
+- Automated CI check that fails PRs without proper version bumps
+
+### Changed
+- Updated README.md to include contribution guidelines and version bump requirements
+- Updated COPILOT_GUIDELINES.md with mandatory version bump enforcement details
+- Enhanced release checklist to emphasize version bump requirement
+
+### Documentation
+- All PRs to main must now bump version in config.yaml to be greater than current main version
+- Version bumps follow semantic versioning (MAJOR.MINOR.PATCH)
+- Automated enforcement prevents merges without proper version updates
+
 ## [1.0.5] - 2025-10-22
 
 ### Fixed
