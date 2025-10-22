@@ -35,7 +35,11 @@ The registration token for the GitHub Actions runner. You can generate this toke
 - **Repository runners**: Go to your repository → Settings → Actions → Runners → New self-hosted runner
 - **Organization runners**: Go to your organization → Settings → Actions → Runners → New runner
 
-**Note**: The token is valid for 1 hour after generation, so you need to configure and start the add-on within that time frame.
+**Important Notes**:
+- The token is **valid for only 1 hour** after generation
+- You must configure and start the add-on within that time frame
+- If you see 404 errors during registration, the token has likely expired - generate a new one
+- The token is a long string (typically 50+ characters) starting with letters and containing alphanumeric characters
 
 ### Option: `debug_logging` (optional)
 
@@ -74,6 +78,41 @@ debug_logging: false
 - ✅ Supports multiple architectures (amd64, aarch64, armhf, armv7, i386)
 - ✅ Automatic cleanup on shutdown
 - ✅ Easy configuration through Home Assistant UI
+
+## Troubleshooting
+
+### 404 Error During Runner Registration
+
+If you see an error like:
+```
+Http response code: NotFound from 'POST https://api.github.com/actions/runner-registration'
+Response status code does not indicate success: 404 (Not Found).
+```
+
+This typically means:
+
+1. **Token Expired** (Most Common): Registration tokens expire after 1 hour
+   - Solution: Generate a new token from GitHub and update the add-on configuration
+   
+2. **Invalid Repository URL**: The URL format is incorrect
+   - Correct format for repository: `https://github.com/owner/repo`
+   - Correct format for organization: `https://github.com/organization`
+   - Do NOT add trailing slashes or extra paths
+   
+3. **Insufficient Permissions**: You don't have admin rights to the repository/organization
+   - Solution: Ensure you have admin access to create self-hosted runners
+
+4. **Wrong Token Type**: Using a Personal Access Token (PAT) instead of a runner registration token
+   - Solution: Use the registration token from the "New self-hosted runner" page, not a PAT
+
+### Quick Fix Steps
+
+1. Go to your GitHub repository or organization
+2. Navigate to **Settings** → **Actions** → **Runners**
+3. Click **New self-hosted runner**
+4. Copy the **registration token** from the configuration command shown
+5. Update this add-on's configuration with the new token
+6. Restart the add-on immediately (within 1 hour)
 
 ## Support
 
