@@ -17,8 +17,10 @@ hassio_role: default
 options:
   repo_url: ""
   runner_token: ""
+  runner_name: ""
   debug_logging: false
 schema:
   repo_url: str
   runner_token: str
+  runner_name: str?
   debug_logging: bool

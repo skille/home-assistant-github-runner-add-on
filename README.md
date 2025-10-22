@@ -37,6 +37,14 @@ The registration token for the GitHub Actions runner. You can generate this toke
 
 **Note**: The token is valid for 1 hour after generation, so you need to configure and start the add-on within that time frame.
 
+### Option: `runner_name` (optional)
+
+A custom name for the GitHub Actions runner. This makes it easier to identify your runner in the GitHub UI, especially when managing multiple runners.
+
+Example: `homeassistant-runner-prod` or `ha-runner-01`
+
+If not specified, GitHub will auto-generate a name based on the hostname.
+
 ### Option: `debug_logging` (optional)
 
 Enable debug/verbose logging for troubleshooting. When enabled, the add-on will output additional information including:
@@ -53,8 +61,11 @@ Default: `false`
 ```yaml
 repo_url: "https://github.com/yourusername/yourrepo"
 runner_token: "YOUR_RUNNER_TOKEN_HERE"
+runner_name: "homeassistant-runner"
 debug_logging: false
 ```
+
+**Note**: The `runner_name` field is optional. If omitted, GitHub will auto-generate a runner name.
 
 ## How to Use
 

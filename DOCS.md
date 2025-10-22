@@ -38,12 +38,15 @@ Before using this add-on, you need:
 |--------|------|----------|-------------|
 | `repo_url` | string | Yes | The URL of the GitHub repository or organization (e.g., `https://github.com/username/repo`) |
 | `runner_token` | string | Yes | The registration token from GitHub for registering the runner |
+| `runner_name` | string | No | Custom name for the GitHub Actions runner. If not set, GitHub will auto-generate a name. |
 | `debug_logging` | boolean | No | Enable debug/verbose logging for troubleshooting (default: `false`) |
 
 ### Runner Behavior
 
 - The runner will automatically register with GitHub when the add-on starts
 - It will appear as "online" in your GitHub repository/organization runners list
+- If you specify a custom `runner_name`, the runner will be registered with that name for easy identification
+- If `runner_name` is not set, GitHub will auto-generate a name (typically based on the hostname)
 - The runner will process workflow jobs assigned to it
 - When the add-on stops, the runner will automatically unregister from GitHub
 
@@ -91,6 +94,23 @@ The debug logs will show:
 - The runner runs in a containerized environment for isolation
 
 ### Advanced Usage
+
+#### Custom Runner Names
+
+You can specify a custom name for your runner to make it easier to identify in the GitHub UI, especially when managing multiple runners:
+
+```yaml
+repo_url: "https://github.com/your-username/your-repo"
+runner_token: "YOUR_RUNNER_TOKEN"
+runner_name: "homeassistant-runner-prod"
+```
+
+This is particularly useful when:
+- Running multiple instances of the add-on
+- Distinguishing between production and test runners
+- Managing runners across different Home Assistant instances
+
+If you don't specify a `runner_name`, GitHub will auto-generate a name based on the hostname.
 
 #### Organization-Level Runners
 
