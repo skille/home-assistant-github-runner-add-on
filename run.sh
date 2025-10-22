@@ -7,6 +7,7 @@ bashio::log.info "Starting GitHub Actions Runner..."
 CONFIG_FILE="/data/options.json"
 REPO_URL=$(jq -r '.repo_url // empty' "$CONFIG_FILE")
 RUNNER_TOKEN=$(jq -r '.runner_token // empty' "$CONFIG_FILE")
+RUNNER_NAME=$(jq -r '.runner_name // empty' "$CONFIG_FILE")
 DEBUG_LOGGING=$(jq -r '.debug_logging // false' "$CONFIG_FILE")
 
 # Enable debug logging if requested
@@ -49,7 +50,12 @@ chown -R runner:runner /runner
 
 # Configure the runner as the runner user
 bashio::log.info "Configuring GitHub Actions Runner..."
-su runner -c "./config.sh --url \"${REPO_URL}\" --token \"${RUNNER_TOKEN}\" --unattended --replace"
+if [ -n "$RUNNER_NAME" ]; then
+    bashio::log.info "Using custom runner name: ${RUNNER_NAME}"
+    su runner -c "./config.sh --url \"${REPO_URL}\" --token \"${RUNNER_TOKEN}\" --name \"${RUNNER_NAME}\" --unattended --replace"
+else
+    su runner -c "./config.sh --url \"${REPO_URL}\" --token \"${RUNNER_TOKEN}\" --unattended --replace"
+fi
 
 # Cleanup function
 cleanup() {
