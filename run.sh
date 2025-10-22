@@ -3,9 +3,10 @@ set -e
 
 bashio::log.info "Starting GitHub Actions Runner..."
 
-# Get configuration from Home Assistant
-REPO_URL=$(bashio::config 'repo_url')
-RUNNER_TOKEN=$(bashio::config 'runner_token')
+# Get configuration from Home Assistant options file
+CONFIG_FILE="/data/options.json"
+REPO_URL=$(jq -r '.repo_url // empty' "$CONFIG_FILE")
+RUNNER_TOKEN=$(jq -r '.runner_token // empty' "$CONFIG_FILE")
 
 # Validate required parameters
 if [ -z "$REPO_URL" ]; then
