@@ -1,0 +1,20 @@
+name: GitHub Actions Runner
+version: "1.0.0"
+slug: github_actions_runner
+description: Self-hosted GitHub Actions runner for Home Assistant
+url: https://github.com/skille/home-assistant-github-runner-add-on
+arch:
+  - aarch64
+  - amd64
+  - armhf
+  - armv7
+  - i386
+init: false
+startup: services
+boot: auto
+options:
+  repo_url: ""
+  runner_token: ""
+schema:
+  repo_url: str
+  runner_token: str
