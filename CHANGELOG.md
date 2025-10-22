@@ -1,5 +1,21 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+- Added URL format validation in run.sh to detect incorrect repository URLs
+- Added token length validation to catch obviously invalid tokens
+- Added proactive informational messages about token expiration (1-hour validity)
+- Added comprehensive error handling for runner registration failures with actionable troubleshooting steps
+- Added detailed troubleshooting section in README.md for 404 errors during registration
+- Added expanded troubleshooting documentation in DOCS.md with specific 404 error guidance
+
+### Improved
+- Enhanced error messages to clearly explain common causes of registration failures
+- Improved documentation to distinguish between registration tokens and Personal Access Tokens (PATs)
+- Added token length to debug logging output for better diagnostics
+- Enhanced configuration documentation with explicit notes about token expiration and format
+
 ## [1.0.5] - 2025-10-22
 
 ### Fixed
