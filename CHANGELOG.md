@@ -4,7 +4,7 @@
 
 ### Fixed
 - Fixed Dotnet Core 6.0 Libicu dependency errors by installing icu-data-full package
-- Fixed symbol not found errors (__isnan, __isnanf) in libcoreclr.so by ensuring proper compatibility libraries
+- Fixed symbol not found errors (__isnan, __isnanf) in libcoreclr.so by running installdependencies.sh during Docker build
 - Added lttng-ust package for .NET Core runtime tracing support
 
 ### Added
