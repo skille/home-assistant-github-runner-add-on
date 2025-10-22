@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.0.4] - 2025-10-22
+
+### Fixed
+- Fixed Docker build failure caused by Alpine Linux incompatibility with GitHub Actions runner
+- Switched from Alpine Linux base images to Debian (bookworm) base images for better .NET Core support
+- Resolved "Can't detect current OS type based on /etc/os-release" error
+- Resolved "Can't install dotnet core dependencies" error
+
+### Changed
+- Updated base images from `ghcr.io/home-assistant/*-base:3.19` (Alpine) to `ghcr.io/home-assistant/*-base-debian:bookworm`
+- Changed package manager from `apk` to `apt-get` for Debian compatibility
+- Updated debug logging to show Debian OS information instead of Alpine version
+- Removed Alpine-specific packages (gcompat, icu-libs, icu-data-full, etc.) as they are no longer needed
+- The `./bin/installdependencies.sh` script now successfully installs all required .NET Core dependencies
+
+### Notes
+- GitHub Actions runner officially supports Debian/Ubuntu-based systems but not Alpine Linux
+- Image size will be slightly larger (~100MB vs ~5MB base) but with improved compatibility
+- All architectures (amd64, aarch64, armhf, armv7, i386) are still supported
+
 ## [1.0.3] - 2025-10-22
 
 ### Fixed

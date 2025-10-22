@@ -5,26 +5,18 @@ FROM $BUILD_FROM
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Install dependencies
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     bash \
     curl \
     git \
     jq \
     tar \
     sudo \
-    gcompat \
-    icu-libs \
-    icu-data-full \
-    krb5-libs \
-    libgcc \
-    libintl \
-    libssl3 \
-    libstdc++ \
-    lttng-ust \
-    zlib
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
 # Create a non-root user for running the GitHub Actions runner
-RUN adduser -D -u 1000 runner
+RUN useradd -m -u 1000 runner
 
 # Set up runner directory
 RUN mkdir -p /runner && chmod 755 /runner

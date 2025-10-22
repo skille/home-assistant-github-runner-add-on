@@ -110,18 +110,24 @@ The Dockerfile follows Home Assistant best practices:
 ARG BUILD_FROM
 FROM $BUILD_FROM
 
-# Alpine-based container with minimal dependencies
+# Debian-based container with minimal dependencies
 # Uses non-root user for security
-# Includes .NET Core 6.0 dependencies for GitHub Actions runner
+# Includes .NET Core dependencies via GitHub Actions runner's installdependencies.sh
 ```
 
 ### Key Dependencies
 
-The add-on installs these packages:
+The add-on installs these base packages via apt-get:
 
-- **Runtime**: bash, curl, git, jq, tar, sudo
-- **.NET Core 6.0**: gcompat, icu-libs, icu-data-full, krb5-libs, libgcc, libssl3, libstdc++, lttng-ust, zlib
+- **Runtime**: bash, curl, git, jq, tar, sudo, ca-certificates
+- **.NET Core Dependencies**: Automatically installed by GitHub Actions runner's `./bin/installdependencies.sh` script
 - **Purpose**: GitHub Actions runner requires .NET Core runtime and supporting libraries
+
+The runner's `installdependencies.sh` script automatically installs all required .NET Core dependencies for Debian-based systems, including:
+- libkrb5-3, zlib1g (Kerberos and compression libraries)
+- liblttng-ust1 or liblttng-ust0 (Linux Trace Toolkit)
+- libicu (International Components for Unicode)
+- Other platform-specific dependencies
 
 ### Security: Non-Root Execution
 
@@ -164,8 +170,8 @@ The add-on uses Home Assistant's build system:
 ```yaml
 # build.yaml
 build_from:
-  aarch64: "ghcr.io/home-assistant/aarch64-base:3.19"
-  amd64: "ghcr.io/home-assistant/amd64-base:3.19"
+  aarch64: "ghcr.io/home-assistant/aarch64-base-debian:bookworm"
+  amd64: "ghcr.io/home-assistant/amd64-base-debian:bookworm"
   # ... other architectures
 ```
 
@@ -176,16 +182,16 @@ Architecture mapping for GitHub Actions runner:
 
 ### Docker Best Practices for This Add-on
 
-1. **Use Official Base Images**: Always use `ghcr.io/home-assistant/*-base` images
-2. **Pin Versions**: Specify exact versions (e.g., `3.19`) for reproducibility
+1. **Use Official Base Images**: Always use `ghcr.io/home-assistant/*-base-debian` images
+2. **Pin Versions**: Specify exact versions (e.g., `bookworm`) for reproducibility
 3. **Layer Optimization**: Combine RUN commands to reduce image layers
-4. **Dependency Installation**: Run `./bin/installdependencies.sh` to ensure all .NET dependencies are installed
+4. **Dependency Installation**: Run `./bin/installdependencies.sh` to ensure all .NET dependencies are installed (requires sudo/root)
 5. **Cleanup**: Remove temporary files and caches to minimize image size
 
 ### Debugging Container Issues
 
 Enable debug logging to inspect:
-- Alpine Linux version
+- Debian/Ubuntu OS version
 - Installed dependency packages
 - Runner directory contents and permissions
 - Runner version and configuration
@@ -573,13 +579,15 @@ When using Copilot AI to work on this repository, it should understand:
 
 #### Fixing Dependency Issues
 
-When fixing .NET Core or Alpine package issues:
+When fixing .NET Core or Debian package issues:
 
 1. Identify missing library from error messages
-2. Find Alpine package: `apk search <package>`
-3. Add to Dockerfile RUN command
+2. Find Debian package: `apt-cache search <package>` or `apt-file search <library>`
+3. Add to Dockerfile RUN command using `apt-get install`
 4. Test build for all architectures
 5. Document in CHANGELOG.md
+
+Note: The GitHub Actions runner's `installdependencies.sh` script automatically handles .NET Core dependencies on Debian-based systems.
 
 #### Improving Logging
 
@@ -714,16 +722,18 @@ When reviewing AI-generated code:
 **Symptoms:**
 - Error: "Libicu not found"
 - Error: "Symbol not found: __isnan, __isnanf"
+- Error: "Can't detect current OS type based on /etc/os-release"
+- Error: "Can't install dotnet core dependencies"
 - Runner fails to start
 
 **Solution:**
-1. Ensure `icu-data-full` and `lttng-ust` packages are installed
-2. Verify `./bin/installdependencies.sh` runs in Dockerfile
+1. Ensure the add-on is using Debian-based images (version 1.0.4+)
+2. Verify `./bin/installdependencies.sh` runs successfully in Dockerfile
 3. Enable debug logging to see installed packages
-4. Rebuild Docker image if necessary
+4. Check that the runner downloads and extracts correctly
 
 **Prevention:**
-These dependencies are already included in version 1.0.3+. If using older versions, upgrade to latest.
+Version 1.0.4+ uses Debian-based images which are officially supported by GitHub Actions runner. The `installdependencies.sh` script automatically installs all required .NET Core dependencies.
 
 #### Issue: Permission Denied Errors
 
