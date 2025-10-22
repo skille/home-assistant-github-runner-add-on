@@ -78,8 +78,8 @@ If you encounter errors related to missing dependencies or .NET Core issues:
 4. The add-on includes all necessary .NET Core 6.0 dependencies (including Libicu)
 
 The debug logs will show:
-- Alpine Linux version
-- Installed dependency packages (icu, gcompat, lttng, libssl, krb5)
+- Operating system version
+- Installed dependency packages (libicu, libkrb5, liblttng, libssl, zlib)
 - Runner directory contents and permissions
 - Runner version and configuration status
 

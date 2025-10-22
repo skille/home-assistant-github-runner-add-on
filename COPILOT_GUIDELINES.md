@@ -242,7 +242,7 @@ The runner configuration happens automatically:
 The runner automatically receives these labels:
 - `self-hosted`: Indicates it's a self-hosted runner
 - Architecture label: `Linux`, `ARM64`, `X64`, etc.
-- OS label: Based on Alpine Linux
+- OS label: Based on Debian Linux
 
 To use this runner in workflows:
 
@@ -458,7 +458,7 @@ Example:
 
 ### Added
 - New configuration option `debug_logging` for troubleshooting
-- Enhanced logging with Alpine version and package information
+- Enhanced logging with OS version and package information
 ```
 
 ### Git Workflow
@@ -552,8 +552,8 @@ When using Copilot AI to work on this repository, it should understand:
 
 **Key Technologies:**
 - Home Assistant Add-on framework
-- Docker/Alpine Linux
-- GitHub Actions Runner (requires .NET Core 6.0)
+- Docker/Debian Linux
+- GitHub Actions Runner (requires .NET Core)
 - Bash scripting with bashio library
 
 ### Common Development Tasks
@@ -801,7 +801,7 @@ debug_logging: true
 ```
 
 This provides:
-- Alpine Linux version
+- Operating system version (Debian)
 - Installed dependency packages
 - Runner directory contents and permissions
 - Runner version and configuration details
