@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2] - 2025-10-22
+
+### Fixed
+- Fixed "Must not run with sudo" warning by creating and using a non-root user for running the GitHub Actions runner
+- Runner now executes as a dedicated 'runner' user instead of root for improved security
+- Set proper file ownership for runner directory to ensure non-root user can access files
+
 ## [1.0.1] - 2025-10-22
 
 ### Fixed
