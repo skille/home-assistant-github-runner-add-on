@@ -46,6 +46,7 @@ RUN RUNNER_VERSION=$(curl -s https://api.github.com/repos/actions/runner/release
     curl -o actions-runner.tar.gz -L "https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-${RUNNER_ARCH}-${RUNNER_VERSION}.tar.gz" && \
     tar xzf actions-runner.tar.gz && \
     rm actions-runner.tar.gz && \
+    ./bin/installdependencies.sh && \
     chown -R runner:runner /runner
 
 # Copy run script
