@@ -31,9 +31,9 @@ bashio::log.info "Repository URL: ${REPO_URL}"
 # Debug information
 if [ "$DEBUG_LOGGING" = "true" ]; then
     bashio::log.info "=== Debug Information ==="
-    bashio::log.info "Alpine Version: $(cat /etc/alpine-release || echo 'N/A')"
+    bashio::log.info "OS Version: $(cat /etc/os-release | grep PRETTY_NAME | cut -d'=' -f2 | tr -d '\"')"
     bashio::log.info "Installed packages:"
-    apk list --installed | grep -E "(icu|gcompat|lttng|dotnet|libssl|krb5)" || true
+    dpkg -l | grep -E "(libicu|libkrb5|liblttng|libssl|zlib)" || true
     bashio::log.info "Runner directory contents:"
     ls -la /runner
     bashio::log.info "Runner version:"
