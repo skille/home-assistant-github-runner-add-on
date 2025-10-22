@@ -40,7 +40,7 @@ The registration token for the GitHub Actions runner. You can generate this toke
 ### Option: `debug_logging` (optional)
 
 Enable debug/verbose logging for troubleshooting. When enabled, the add-on will output additional information including:
-- Alpine Linux version
+- Operating system version
 - Installed dependency packages
 - Runner directory contents
 - Runner version information
