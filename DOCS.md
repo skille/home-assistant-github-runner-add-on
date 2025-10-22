@@ -38,12 +38,14 @@ Before using this add-on, you need:
 |--------|------|----------|-------------|
 | `repo_url` | string | Yes | The URL of the GitHub repository or organization (e.g., `https://github.com/username/repo`) |
 | `runner_token` | string | Yes | The registration token from GitHub for registering the runner |
+| `runner_name` | string | No | Custom name for the GitHub runner. If not set, GitHub will auto-generate a name (default: auto-generated) |
 | `debug_logging` | boolean | No | Enable debug/verbose logging for troubleshooting (default: `false`) |
 
 ### Runner Behavior
 
 - The runner will automatically register with GitHub when the add-on starts
 - It will appear as "online" in your GitHub repository/organization runners list
+- By default, GitHub auto-generates a runner name. You can specify a custom name using the `runner_name` configuration option for easier identification
 - The runner will process workflow jobs assigned to it
 - When the add-on stops, the runner will automatically unregister from GitHub
 
