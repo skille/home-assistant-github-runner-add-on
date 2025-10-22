@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.0.4] - 2025-10-22
+## [1.0.5] - 2025-10-22
 
 ### Fixed
 - Fixed Docker build failure caused by Alpine Linux incompatibility with GitHub Actions runner
