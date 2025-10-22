@@ -7,6 +7,13 @@ bashio::log.info "Starting GitHub Actions Runner..."
 CONFIG_FILE="/data/options.json"
 REPO_URL=$(jq -r '.repo_url // empty' "$CONFIG_FILE")
 RUNNER_TOKEN=$(jq -r '.runner_token // empty' "$CONFIG_FILE")
+DEBUG_LOGGING=$(jq -r '.debug_logging // false' "$CONFIG_FILE")
+
+# Enable debug logging if requested
+if [ "$DEBUG_LOGGING" = "true" ]; then
+    bashio::log.info "Debug logging enabled"
+    set -x
+fi
 
 # Validate required parameters
 if [ -z "$REPO_URL" ]; then
@@ -20,6 +27,19 @@ if [ -z "$RUNNER_TOKEN" ]; then
 fi
 
 bashio::log.info "Repository URL: ${REPO_URL}"
+
+# Debug information
+if [ "$DEBUG_LOGGING" = "true" ]; then
+    bashio::log.info "=== Debug Information ==="
+    bashio::log.info "Alpine Version: $(cat /etc/alpine-release || echo 'N/A')"
+    bashio::log.info "Installed packages:"
+    apk list --installed | grep -E "(icu|gcompat|lttng|dotnet|libssl|krb5)" || true
+    bashio::log.info "Runner directory contents:"
+    ls -la /runner
+    bashio::log.info "Runner version:"
+    cat /runner/.runner 2>/dev/null || echo "Runner not yet configured"
+    bashio::log.info "========================="
+fi
 
 # Change to runner directory
 cd /runner

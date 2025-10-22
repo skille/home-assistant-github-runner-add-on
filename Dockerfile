@@ -14,11 +14,13 @@ RUN apk add --no-cache \
     sudo \
     gcompat \
     icu-libs \
+    icu-data-full \
     krb5-libs \
     libgcc \
     libintl \
     libssl3 \
     libstdc++ \
+    lttng-ust \
     zlib
 
 # Create a non-root user for running the GitHub Actions runner

@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.0.3] - 2025-10-22
+
+### Fixed
+- Fixed Dotnet Core 6.0 Libicu dependency errors by installing icu-data-full package
+- Fixed symbol not found errors (__isnan, __isnanf) in libcoreclr.so by ensuring proper compatibility libraries
+- Added lttng-ust package for .NET Core runtime tracing support
+
+### Added
+- New configuration option `debug_logging` to enable verbose/debug output for troubleshooting
+- Debug mode displays Alpine version, installed packages, runner directory contents, and runner version
+- Enhanced logging to help diagnose dependency and startup issues
+
 ## [1.0.2] - 2025-10-22
 
 ### Fixed
