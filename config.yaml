@@ -12,6 +12,7 @@ arch:
 init: false
 startup: services
 boot: auto
+hassio_api: true
 options:
   repo_url: ""
   runner_token: ""
