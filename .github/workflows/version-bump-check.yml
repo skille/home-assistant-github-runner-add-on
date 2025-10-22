@@ -1,0 +1,95 @@
+name: Version Bump Check
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'config.yaml'
+      - '**'
+
+jobs:
+  check-version-bump:
+    name: Verify version bump in config.yaml
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Get current version from PR
+        id: pr-version
+        run: |
+          PR_VERSION=$(grep -E "^version:" config.yaml | sed 's/version: *"\(.*\)"/\1/')
+          echo "version=$PR_VERSION" >> $GITHUB_OUTPUT
+          echo "PR version: $PR_VERSION"
+      
+      - name: Get main branch version
+        id: main-version
+        run: |
+          git fetch origin main
+          MAIN_VERSION=$(git show origin/main:config.yaml | grep -E "^version:" | sed 's/version: *"\(.*\)"/\1/')
+          echo "version=$MAIN_VERSION" >> $GITHUB_OUTPUT
+          echo "Main version: $MAIN_VERSION"
+      
+      - name: Compare versions
+        run: |
+          PR_VERSION="${{ steps.pr-version.outputs.version }}"
+          MAIN_VERSION="${{ steps.main-version.outputs.version }}"
+          
+          echo "Comparing versions:"
+          echo "  Main branch: $MAIN_VERSION"
+          echo "  PR branch:   $PR_VERSION"
+          
+          if [ "$PR_VERSION" = "$MAIN_VERSION" ]; then
+            echo "❌ ERROR: Version has not been bumped!"
+            echo ""
+            echo "The version in config.yaml must be greater than the current main branch version."
+            echo "Current main version: $MAIN_VERSION"
+            echo "Your PR version:      $PR_VERSION"
+            echo ""
+            echo "Please update the version in config.yaml following semantic versioning:"
+            echo "  - MAJOR.MINOR.PATCH (e.g., 1.0.6)"
+            echo "  - PATCH: Bug fixes and small changes"
+            echo "  - MINOR: New features (backward-compatible)"
+            echo "  - MAJOR: Breaking changes"
+            exit 1
+          fi
+          
+          # Simple version comparison (assumes semantic versioning)
+          IFS='.' read -ra MAIN_PARTS <<< "$MAIN_VERSION"
+          IFS='.' read -ra PR_PARTS <<< "$PR_VERSION"
+          
+          MAIN_MAJOR=${MAIN_PARTS[0]}
+          MAIN_MINOR=${MAIN_PARTS[1]}
+          MAIN_PATCH=${MAIN_PARTS[2]}
+          
+          PR_MAJOR=${PR_PARTS[0]}
+          PR_MINOR=${PR_PARTS[1]}
+          PR_PATCH=${PR_PARTS[2]}
+          
+          VERSION_INCREASED=false
+          
+          if [ "$PR_MAJOR" -gt "$MAIN_MAJOR" ]; then
+            VERSION_INCREASED=true
+          elif [ "$PR_MAJOR" -eq "$MAIN_MAJOR" ] && [ "$PR_MINOR" -gt "$MAIN_MINOR" ]; then
+            VERSION_INCREASED=true
+          elif [ "$PR_MAJOR" -eq "$MAIN_MAJOR" ] && [ "$PR_MINOR" -eq "$MAIN_MINOR" ] && [ "$PR_PATCH" -gt "$MAIN_PATCH" ]; then
+            VERSION_INCREASED=true
+          fi
+          
+          if [ "$VERSION_INCREASED" = false ]; then
+            echo "❌ ERROR: Version must be greater than the main branch version!"
+            echo ""
+            echo "Current main version: $MAIN_VERSION"
+            echo "Your PR version:      $PR_VERSION"
+            echo ""
+            echo "The version in your PR must be numerically greater than the main branch version."
+            exit 1
+          fi
+          
+          echo "✅ Version bump verified successfully!"
+          echo "  Main version: $MAIN_VERSION"
+          echo "  New version:  $PR_VERSION"

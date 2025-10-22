@@ -81,7 +81,20 @@ Got questions or issues? Please open an issue on the [GitHub repository][github]
 
 ## Contributing
 
-This is an active open-source project. Feel free to submit pull requests or open issues.
+This is an active open-source project. We welcome contributions!
+
+**Important**: All pull requests to the main branch must include a version bump in `config.yaml`. This is enforced by automated checks. See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+
+### Quick Contribution Guidelines
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. **Bump the version in `config.yaml`** (must be greater than current main version)
+5. Update `CHANGELOG.md` with your changes
+6. Submit a pull request
+
+For detailed contribution guidelines, versioning rules, and development workflow, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 

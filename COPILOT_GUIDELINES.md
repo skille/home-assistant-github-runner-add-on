@@ -359,6 +359,16 @@ The runner automatically gets appropriate labels based on its environment.
 
 ## Versioning and Release Management
 
+### 🚨 CRITICAL: Mandatory Version Bump Policy
+
+**EVERY COMMIT TO THE MAIN BRANCH MUST INCLUDE A VERSION BUMP IN `config.yaml`**
+
+This is an enforced requirement:
+- Automated GitHub Actions workflow checks all PRs to main
+- PRs without version bumps will fail CI checks and cannot be merged
+- The new version must be greater than the current main branch version
+- This ensures Home Assistant users always receive updates properly
+
 ### Semantic Versioning
 
 This project follows [Semantic Versioning](https://semver.org/):
@@ -375,18 +385,48 @@ Version is defined in `config.yaml`:
 
 ```yaml
 name: GitHub Actions Runner
-version: "1.0.3"
+version: "1.0.5"
 ```
+
+### Version Bump Enforcement
+
+Before creating any PR to main:
+
+1. **Check current main version**:
+   ```bash
+   git fetch origin main
+   git show origin/main:config.yaml | grep version
+   ```
+
+2. **Update config.yaml** with a higher version:
+   ```yaml
+   version: "1.0.6"  # Must be > current main version
+   ```
+
+3. **GitHub Actions will verify**:
+   - The version has changed from main
+   - The new version is numerically greater
+   - The version follows semantic versioning format
 
 ### Release Process
 
-#### 1. Update Version Number
+#### 1. Update Version Number (REQUIRED FOR EVERY PR TO MAIN)
+
+**This step is mandatory and enforced by CI/CD:**
 
 Edit `config.yaml`:
 
 ```yaml
-version: "1.0.4"  # Increment appropriately
+version: "1.0.6"  # Increment appropriately - MUST be > main version
 ```
+
+**Important**: Before making changes, always check the current main branch version:
+```bash
+git fetch origin main
+git show origin/main:config.yaml | grep version
+```
+
+Your new version must be numerically greater than the main branch version, or the PR will be rejected by the automated version bump check.
 
 #### 2. Update CHANGELOG.md
 
@@ -525,7 +565,8 @@ git push origin main --tags
 
 ### Release Checklist
 
-- [ ] Version incremented in `config.yaml`
+- [ ] **Version incremented in `config.yaml`** (CRITICAL - enforced by CI)
+- [ ] **Version is greater than main branch version** (verified automatically)
 - [ ] CHANGELOG.md updated with changes
 - [ ] README.md reflects new features (if applicable)
 - [ ] DOCS.md updated (if configuration changed)
@@ -677,12 +718,13 @@ When using Copilot AI for testing:
 
 When reviewing AI-generated code:
 
+- [ ] **Version bumped in config.yaml** (CRITICAL - must be > main branch version)
+- [ ] **CHANGELOG.md updated** with version and changes
 - [ ] Configuration read from `/data/options.json` correctly
 - [ ] Non-root user execution maintained
 - [ ] Proper error handling with bashio logging
 - [ ] Cleanup trap in place
 - [ ] Documentation updated (README, DOCS, CHANGELOG)
-- [ ] Version incremented appropriately
 - [ ] No hardcoded secrets or tokens
 - [ ] Multi-architecture support maintained
 - [ ] Backward compatibility considered
