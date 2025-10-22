@@ -47,6 +47,22 @@ Before using this add-on, you need:
 - The runner will process workflow jobs assigned to it
 - When the add-on stops, the runner will automatically unregister from GitHub
 
+### Web UI
+
+The add-on provides a web interface for managing the runner:
+
+1. **Accessing the Web UI**: After starting the add-on, click "OPEN WEB UI" in the add-on's Home Assistant page
+2. **Runner Status**: The interface displays whether the runner is currently configured and registered
+3. **Unregister Button**: Use the "Unregister GitHub Runner" button to manually remove the runner from GitHub
+
+#### When to Use the Unregister Button
+
+- When you want to remove the runner from GitHub without stopping the add-on
+- When you need to re-register the runner with different settings
+- For troubleshooting registration issues
+
+**Important**: After manually unregistering the runner, you must restart the add-on with a new registration token to register it again. The old token will no longer be valid.
+
 ### Troubleshooting
 
 #### Runner doesn't appear in GitHub

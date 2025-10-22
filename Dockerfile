@@ -13,7 +13,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     tar \
     sudo \
     ca-certificates \
+    python3 \
+    python3-pip \
     && rm -rf /var/lib/apt/lists/*
+
+# Install Flask for the web UI
+RUN pip3 install --no-cache-dir flask==3.0.0
 
 # Create a non-root user for running the GitHub Actions runner
 RUN useradd -m -u 1000 runner
@@ -44,5 +49,9 @@ RUN RUNNER_VERSION=$(curl -s https://api.github.com/repos/actions/runner/release
 # Copy run script
 COPY run.sh /
 RUN chmod a+x /run.sh
+
+# Copy web UI files
+COPY webui /webui
+RUN chmod a+x /webui/server.py
 
 CMD [ "/run.sh" ]
