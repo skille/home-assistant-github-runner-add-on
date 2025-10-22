@@ -37,11 +37,23 @@ The registration token for the GitHub Actions runner. You can generate this toke
 
 **Note**: The token is valid for 1 hour after generation, so you need to configure and start the add-on within that time frame.
 
+### Option: `debug_logging` (optional)
+
+Enable debug/verbose logging for troubleshooting. When enabled, the add-on will output additional information including:
+- Alpine Linux version
+- Installed dependency packages
+- Runner directory contents
+- Runner version information
+- Detailed command execution traces
+
+Default: `false`
+
 ### Example Configuration
 
 ```yaml
 repo_url: "https://github.com/yourusername/yourrepo"
 runner_token: "YOUR_RUNNER_TOKEN_HERE"
+debug_logging: false
 ```
 
 ## How to Use

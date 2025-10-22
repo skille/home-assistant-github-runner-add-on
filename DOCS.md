@@ -38,6 +38,7 @@ Before using this add-on, you need:
 |--------|------|----------|-------------|
 | `repo_url` | string | Yes | The URL of the GitHub repository or organization (e.g., `https://github.com/username/repo`) |
 | `runner_token` | string | Yes | The registration token from GitHub for registering the runner |
+| `debug_logging` | boolean | No | Enable debug/verbose logging for troubleshooting (default: `false`) |
 
 ### Runner Behavior
 
@@ -53,6 +54,7 @@ Before using this add-on, you need:
 - Verify that the `repo_url` is correct and includes the full URL
 - Ensure the `runner_token` hasn't expired (tokens are valid for 1 hour)
 - Check the add-on logs for error messages
+- Enable `debug_logging: true` for more detailed diagnostic information
 
 #### Runner shows as offline
 
@@ -65,6 +67,21 @@ Before using this add-on, you need:
 - Generate a new runner token from GitHub
 - Update the add-on configuration with the new token
 - Restart the add-on
+
+#### Dependency or startup errors
+
+If you encounter errors related to missing dependencies or .NET Core issues:
+
+1. Enable debug logging by setting `debug_logging: true` in the configuration
+2. Restart the add-on
+3. Check the logs for detailed dependency information
+4. The add-on includes all necessary .NET Core 6.0 dependencies (including Libicu)
+
+The debug logs will show:
+- Alpine Linux version
+- Installed dependency packages (icu, gcompat, lttng, libssl, krb5)
+- Runner directory contents and permissions
+- Runner version and configuration status
 
 ### Security Considerations
 
