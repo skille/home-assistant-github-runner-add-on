@@ -58,6 +58,8 @@ if [ "$DEBUG_LOGGING" = "true" ]; then
     bashio::log.info "Runner version:"
     cat /runner/.runner 2>/dev/null || echo "Runner not yet configured"
     bashio::log.info "Token length: ${TOKEN_LENGTH} characters"
+    bashio::log.info "Persistent config directory contents:"
+    ls -la /data/runner-config/ 2>/dev/null || echo "No persistent config yet"
     bashio::log.info "========================="
 fi
 
@@ -67,55 +69,102 @@ cd /runner
 # Ensure runner user owns the directory
 chown -R runner:runner /runner
 
-# Configure the runner as the runner user
-bashio::log.info "Configuring GitHub Actions Runner..."
-if [ -n "$RUNNER_NAME" ]; then
-    bashio::log.info "Using custom runner name: ${RUNNER_NAME}"
-    if ! su runner -c "./config.sh --url \"${REPO_URL}\" --token \"${RUNNER_TOKEN}\" --name \"${RUNNER_NAME}\" --unattended --replace"; then
-        bashio::log.error "Failed to configure runner. Common causes:"
-        bashio::log.error "  1. Registration token expired (valid for 1 hour only)"
-        bashio::log.error "  2. Invalid repository URL format"
-        bashio::log.error "  3. Insufficient permissions for the repository/organization"
-        bashio::log.error "  4. Network connectivity issues"
-        bashio::log.error ""
-        bashio::log.error "To fix:"
-        bashio::log.error "  1. Go to GitHub → Your Repo → Settings → Actions → Runners"
-        bashio::log.error "  2. Click 'New self-hosted runner'"
-        bashio::log.error "  3. Copy the NEW registration token shown"
-        bashio::log.error "  4. Update the add-on configuration with the new token"
-        bashio::log.error "  5. Restart the add-on"
-        exit 1
-    fi
-else
-    if ! su runner -c "./config.sh --url \"${REPO_URL}\" --token \"${RUNNER_TOKEN}\" --unattended --replace"; then
-        bashio::log.error "Failed to configure runner. Common causes:"
-        bashio::log.error "  1. Registration token expired (valid for 1 hour only)"
-        bashio::log.error "  2. Invalid repository URL format"
-        bashio::log.error "  3. Insufficient permissions for the repository/organization"
-        bashio::log.error "  4. Network connectivity issues"
-        bashio::log.error ""
-        bashio::log.error "To fix:"
-        bashio::log.error "  1. Go to GitHub → Your Repo → Settings → Actions → Runners"
-        bashio::log.error "  2. Click 'New self-hosted runner'"
-        bashio::log.error "  3. Copy the NEW registration token shown"
-        bashio::log.error "  4. Update the add-on configuration with the new token"
-        bashio::log.error "  5. Restart the add-on"
-        exit 1
-    fi
-fi
+# Persistent storage for runner configuration
+RUNNER_CONFIG_DIR="/data/runner-config"
+mkdir -p "$RUNNER_CONFIG_DIR"
+chown runner:runner "$RUNNER_CONFIG_DIR"
 
-# Cleanup function
-cleanup() {
-    bashio::log.info "Cleaning up..."
+# Function to configure the runner
+configure_runner() {
+    bashio::log.info "Configuring GitHub Actions Runner..."
+    if [ -n "$RUNNER_NAME" ]; then
+        bashio::log.info "Using custom runner name: ${RUNNER_NAME}"
+        if ! su runner -c "./config.sh --url \"${REPO_URL}\" --token \"${RUNNER_TOKEN}\" --name \"${RUNNER_NAME}\" --unattended --replace"; then
+            return 1
+        fi
+    else
+        if ! su runner -c "./config.sh --url \"${REPO_URL}\" --token \"${RUNNER_TOKEN}\" --unattended --replace"; then
+            return 1
+        fi
+    fi
     
-    # Remove the runner
-    bashio::log.info "Removing runner..."
-    su runner -c "./config.sh remove --token \"${RUNNER_TOKEN}\""
+    # Backup configuration files to persistent storage
+    bashio::log.info "Backing up runner configuration to persistent storage..."
+    cp -f .runner "$RUNNER_CONFIG_DIR/" 2>/dev/null || true
+    cp -f .credentials "$RUNNER_CONFIG_DIR/" 2>/dev/null || true
+    cp -f .credentials_rsaparams "$RUNNER_CONFIG_DIR/" 2>/dev/null || true
+    chown runner:runner "$RUNNER_CONFIG_DIR"/.* 2>/dev/null || true
+    
+    return 0
 }
 
-# Set trap to cleanup on exit
-trap cleanup EXIT
+# Function to restore runner configuration
+restore_runner_config() {
+    if [ -f "$RUNNER_CONFIG_DIR/.runner" ] && [ -f "$RUNNER_CONFIG_DIR/.credentials" ]; then
+        bashio::log.info "Found existing runner configuration, attempting to restore..."
+        cp -f "$RUNNER_CONFIG_DIR/.runner" . 2>/dev/null || return 1
+        cp -f "$RUNNER_CONFIG_DIR/.credentials" . 2>/dev/null || return 1
+        cp -f "$RUNNER_CONFIG_DIR/.credentials_rsaparams" . 2>/dev/null || true
+        chown runner:runner .runner .credentials .credentials_rsaparams 2>/dev/null || true
+        return 0
+    fi
+    return 1
+}
 
-# Start the runner as the runner user
-bashio::log.info "Starting runner..."
-su runner -c "./run.sh"
+# Function to start runner with auto-recovery
+start_runner() {
+    bashio::log.info "Starting runner..."
+    
+    # Try to start the runner
+    if su runner -c "./run.sh"; then
+        return 0
+    else
+        EXIT_CODE=$?
+        bashio::log.warning "Runner exited with code $EXIT_CODE"
+        
+        # If runner failed and we have a persisted config, it might have been deleted from GitHub
+        # Try to re-register
+        if [ -f ".runner" ]; then
+            bashio::log.info "Attempting to re-register runner (may have been deleted from GitHub portal)..."
+            rm -f .runner .credentials .credentials_rsaparams 2>/dev/null || true
+            
+            if configure_runner; then
+                bashio::log.info "Runner re-registered successfully! Starting runner..."
+                su runner -c "./run.sh"
+                return $?
+            else
+                bashio::log.error "Failed to re-register runner. Please check token and configuration."
+                return 1
+            fi
+        fi
+        
+        return $EXIT_CODE
+    fi
+}
+
+# Try to restore existing configuration
+if restore_runner_config; then
+    bashio::log.info "Found existing runner configuration. Will attempt to use it."
+else
+    # No existing configuration - first-time setup
+    bashio::log.info "No existing runner configuration found. Registering new runner..."
+    if ! configure_runner; then
+        bashio::log.error "Failed to configure runner. Common causes:"
+        bashio::log.error "  1. Registration token expired (valid for 1 hour only)"
+        bashio::log.error "  2. Invalid repository URL format"
+        bashio::log.error "  3. Insufficient permissions for the repository/organization"
+        bashio::log.error "  4. Network connectivity issues"
+        bashio::log.error ""
+        bashio::log.error "To fix:"
+        bashio::log.error "  1. Go to GitHub → Your Repo → Settings → Actions → Runners"
+        bashio::log.error "  2. Click 'New self-hosted runner'"
+        bashio::log.error "  3. Copy the NEW registration token shown"
+        bashio::log.error "  4. Update the add-on configuration with the new token"
+        bashio::log.error "  5. Restart the add-on"
+        exit 1
+    fi
+    bashio::log.info "Runner configured successfully!"
+fi
+
+# Start the runner (with auto-recovery if needed)
+start_runner

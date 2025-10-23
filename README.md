@@ -37,8 +37,14 @@ The registration token for the GitHub Actions runner. You can generate this toke
 
 **Important Notes**:
 - The token is **valid for only 1 hour** after generation
-- You must configure and start the add-on within that time frame
-- If you see 404 errors during registration, the token has likely expired - generate a new one
+- The token is only needed for **initial setup** (or if automatic re-registration fails)
+- **Runner configuration persists across all restarts** - no new token needed
+- On restart, the add-on automatically restores and resumes the runner
+- **Auto-recovery**: If runner was deleted from GitHub portal, it's automatically re-registered using the configured token
+- Generate a new token only if:
+  - Setting up the runner for the first time
+  - Automatic re-registration fails (token expired)
+  - You want to change the runner name or repository
 - The token is a long string (typically 50+ characters) starting with letters and containing alphanumeric characters
 
 ### Option: `runner_name` (optional)
@@ -99,6 +105,9 @@ debug_logging: false
 - ✅ Supports multiple architectures (amd64, aarch64, armhf, armv7, i386)
 - ✅ Automatic cleanup on shutdown
 - ✅ Easy configuration through Home Assistant UI
+- ✅ Persistent runner configuration across restarts (no token re-registration needed)
+- ✅ Automatic recovery and resume after host/add-on restarts
+- ✅ Auto-recovery if runner is deleted from GitHub portal
 
 ## Troubleshooting
 
