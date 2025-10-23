@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.3.0] - 2025-10-23
+
+### Added
+- Graceful shutdown signal handling for GitHub runners
+- Signal handlers for SIGTERM, SIGINT, and SIGHUP to catch shutdown events
+- Runner now properly marks itself as offline when receiving termination signals
+- Prevents GitHub from dispatching new actions to runners during shutdown
+
+### Changed
+- Runner process is now managed with proper signal forwarding
+- On add-on stop, add-on restart, or host/OS shutdown, the runner receives SIGTERM
+- Runner stops accepting new jobs immediately upon receiving shutdown signal
+- Any currently running job is allowed to complete before final termination
+
+### Impact
+- GitHub is promptly notified when runners become unavailable
+- Prevents failed job assignments to unavailable runners
+- Improved reliability during system maintenance and restarts
+
 ## [1.2.0] - 2025-10-23
 
 ### Added

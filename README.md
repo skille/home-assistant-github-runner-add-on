@@ -98,11 +98,23 @@ debug_logging: false
 5. Start the add-on
 6. The runner will appear as online in your GitHub repository/organization
 
+## Graceful Shutdown
+
+The add-on implements graceful shutdown handling to prevent GitHub from dispatching actions to unavailable runners:
+
+- **On add-on stop or restart**: The runner receives a SIGTERM signal, immediately stops accepting new jobs, and notifies GitHub it's going offline
+- **On host/OS shutdown**: The runner receives the shutdown signal and gracefully terminates
+- **Currently running jobs**: Any job in progress is allowed to complete before the runner fully terminates
+- **GitHub notification**: GitHub is immediately notified when the runner becomes unavailable, preventing failed job assignments
+
+This ensures reliable operation during system maintenance, restarts, and shutdowns.
+
 ## Features
 
 - ✅ Self-hosted GitHub Actions runner
 - ✅ Runs within Home Assistant as an add-on
 - ✅ Supports multiple architectures (amd64, aarch64, armhf, armv7, i386)
+- ✅ Graceful shutdown with signal handling (prevents job dispatch to unavailable runners)
 - ✅ Automatic cleanup on shutdown
 - ✅ Easy configuration through Home Assistant UI
 - ✅ Persistent runner configuration across restarts (no token re-registration needed)

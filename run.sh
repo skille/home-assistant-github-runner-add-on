@@ -3,6 +3,35 @@ set -e
 
 bashio::log.info "Starting GitHub Actions Runner..."
 
+# PID of the runner process
+RUNNER_PID=""
+
+# Graceful shutdown handler
+graceful_shutdown() {
+    bashio::log.info "Received shutdown signal. Initiating graceful shutdown..."
+    
+    if [ -n "$RUNNER_PID" ] && kill -0 "$RUNNER_PID" 2>/dev/null; then
+        bashio::log.info "Sending SIGTERM to runner process (PID: $RUNNER_PID) to stop accepting new jobs..."
+        # Send SIGTERM to the runner process group
+        kill -TERM -"$RUNNER_PID" 2>/dev/null || true
+        
+        bashio::log.info "Waiting for current job to complete (if any)..."
+        # Wait for the runner process to finish gracefully
+        wait "$RUNNER_PID" 2>/dev/null || true
+        bashio::log.info "Runner stopped gracefully."
+    else
+        bashio::log.info "Runner process not running or already stopped."
+    fi
+    
+    exit 0
+}
+
+# Trap signals for graceful shutdown
+# SIGTERM: Sent by Docker/Home Assistant on container stop
+# SIGINT: Sent on Ctrl+C (if run interactively)
+# SIGHUP: Sent on terminal hangup or system shutdown
+trap 'graceful_shutdown' SIGTERM SIGINT SIGHUP
+
 # Get configuration from Home Assistant options file
 CONFIG_FILE="/data/options.json"
 REPO_URL=$(jq -r '.repo_url // empty' "$CONFIG_FILE")
@@ -115,8 +144,12 @@ restore_runner_config() {
 start_runner() {
     bashio::log.info "Starting runner..."
     
-    # Try to start the runner
-    if su runner -c "./run.sh"; then
+    # Try to start the runner in the background to capture PID
+    su runner -c "./run.sh" &
+    RUNNER_PID=$!
+    
+    # Wait for the runner process
+    if wait "$RUNNER_PID"; then
         return 0
     else
         EXIT_CODE=$?
@@ -130,7 +163,9 @@ start_runner() {
             
             if configure_runner; then
                 bashio::log.info "Runner re-registered successfully! Starting runner..."
-                su runner -c "./run.sh"
+                su runner -c "./run.sh" &
+                RUNNER_PID=$!
+                wait "$RUNNER_PID"
                 return $?
             else
                 bashio::log.error "Failed to re-register runner. Please check token and configuration."
