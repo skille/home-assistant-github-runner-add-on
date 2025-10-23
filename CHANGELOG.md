@@ -1,6 +1,24 @@
 # Changelog
 
-## [Unreleased]
+## [1.0.8] - 2025-10-22
+
+### Added
+- Web UI interface with Ingress support for managing the runner
+- "Unregister GitHub Runner" button in the web interface
+- Visual runner status indicator showing if the runner is configured
+- API endpoints for runner status check and unregistration
+- Flask-based web server for the UI backend
+
+### Changed
+- Added Python 3 and Flask dependencies to the Docker image
+- Updated run.sh to start the web UI server alongside the runner
+- Enhanced documentation with Web UI usage instructions
+
+### Notes
+- Web UI is accessible via "OPEN WEB UI" button in Home Assistant add-on page
+- Manual unregistration requires restarting the add-on with a new token to re-register
+
+## [1.0.7] - 2025-10-22
 
 ### Added
 - Added URL format validation in run.sh to detect incorrect repository URLs
