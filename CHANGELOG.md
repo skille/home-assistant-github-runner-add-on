@@ -18,6 +18,21 @@
 - GitHub is promptly notified when runners become unavailable
 - Prevents failed job assignments to unavailable runners
 - Improved reliability during system maintenance and restarts
+## [1.2.1] - 2025-10-23
+
+### Fixed
+- Fixed logging timestamp offset issue by mapping host timezone to container
+- Timestamps in logs now accurately match host system time
+
+### Added
+- Runner name is now displayed in logs after successful startup for easier identification
+- Added "Runner successfully configured with name: <name>" log message after configuration
+- Added "Restored runner configuration with name: <name>" log message when configuration is restored
+- Added "Starting runner with name: <name>" log message when runner starts
+
+### Changed
+- Enhanced logging to provide better visibility into runner operations
+- Improved debugging experience with runner name output in all relevant operations
 
 ## [1.2.0] - 2025-10-23
 

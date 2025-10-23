@@ -41,6 +41,18 @@ Before using this add-on, you need:
 | `runner_name` | string | No | Custom name for the GitHub runner. If not set, GitHub will auto-generate a name (default: auto-generated) |
 | `debug_logging` | boolean | No | Enable debug/verbose logging for troubleshooting (default: `false`) |
 
+### Logging Features
+
+**New in v1.2.1**:
+
+- **Accurate timestamps**: Logging timestamps now correctly match the host system time. The add-on automatically uses the host timezone configuration, eliminating any timezone offset issues.
+- **Runner name output**: After successful runner startup, the runner name is displayed in the logs for easier identification and debugging. You'll see messages like:
+  - "Runner successfully configured with name: my-runner-name" (when first configured)
+  - "Restored runner configuration with name: my-runner-name" (when configuration is restored)
+  - "Starting runner with name: my-runner-name" (when the runner starts)
+
+These logging improvements make it easier to monitor and troubleshoot the runner, especially when managing multiple runner instances.
+
 ### Runner Behavior
 
 - The runner will automatically register with GitHub when the add-on starts for the first time
