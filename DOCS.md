@@ -66,8 +66,12 @@ jobs:
 ```
 
 **Label Updates**:
-- Changing the `runner_labels` configuration and restarting the add-on will update the runner's labels on GitHub
-- The runner must be re-registered for label changes to take effect (automatic on restart)
+- To update runner labels after initial configuration:
+  1. Remove the runner from GitHub (Settings → Actions → Runners → Select runner → Remove)
+  2. Update the `runner_labels` configuration in Home Assistant
+  3. Restart the add-on
+  4. The runner will automatically re-register with the new labels
+- The add-on will automatically re-register if it detects the runner was removed from GitHub
 
 ### Logging Features
 

@@ -126,6 +126,7 @@ This ensures reliable operation during system maintenance, restarts, and shutdow
 - ✅ Persistent runner configuration across restarts (no token re-registration needed)
 - ✅ Automatic recovery and resume after host/add-on restarts
 - ✅ Auto-recovery if runner is deleted from GitHub portal
+- ✅ Configurable runner labels for workflow targeting (v1.4.0+)
 - ✅ Accurate logging timestamps matching host time (v1.2.1+)
 - ✅ Runner name output in logs for easy identification (v1.2.1+)
 
