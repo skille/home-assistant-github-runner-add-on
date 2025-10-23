@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.0.9] - 2025-10-23
+
+### Fixed
+- Fixed Docker build failure caused by PEP 668 restriction on pip installs in Debian Bookworm
+- Replaced `pip3 install flask==3.0.0` with `python3-flask` from Debian repository to comply with externally-managed environment policy
+
+### Changed
+- Flask installation now uses `apt-get install python3-flask` (version 2.2.2) instead of pip
+- Consolidated Flask installation into main dependencies RUN command, reducing Docker layers
+
+### Notes
+- PEP 668 in Debian Bookworm prevents global pip installs to protect system Python installations
+- Flask 2.2.2 from Debian repositories is fully compatible with the web UI features
+- Follows Docker and Python packaging best practices for system-wide packages
+
 ## [1.0.8] - 2025-10-22
 
 ### Added
