@@ -3,24 +3,28 @@
 ## [1.2.0] - 2025-10-23
 
 ### Added
-- Automatic runner configuration persistence across add-on and host restarts
+- Automatic runner configuration persistence across Home Assistant and host restarts
 - Runner state files (`.runner`, `.credentials`) are now backed up to `/data/runner-config/` for persistence
-- Automatic restoration of runner configuration on restart, eliminating the need for re-registration
+- Automatic restoration of runner configuration on HA/host restart, eliminating the need for re-registration
 - Smart restart logic that only reconfigures when necessary
+- Cleanup of backed-up configuration when add-on is stopped to prevent stale credentials
 
 ### Changed
-- Runner now resumes operation after restarts without requiring a new token if previously configured
-- Registration token is only needed for initial setup or when configuration is lost/invalid
+- Runner now resumes operation after Home Assistant or host restarts without requiring a new token
+- Registration token is needed for initial setup and after manually stopping the add-on
 - Improved startup flow: restore existing configuration → validate → only reconfigure if needed
+- Stopping the add-on now clears backed-up configuration (runner is unregistered)
 
 ### Fixed
-- Fixed issue where runner would fail to start after add-on/host restart due to expired registration token
-- Runner now reliably resumes operation after restarts without manual intervention
+- Fixed issue where runner would fail to start after Home Assistant/host restart due to expired registration token
+- Runner now reliably resumes operation after HA/host restarts without manual intervention
+- Prevented stale configuration from being restored after add-on stop/restart cycles
 
 ### Impact
-- Users no longer need to generate new tokens after every restart
+- Users no longer need to generate new tokens after Home Assistant or host restarts
 - Improved reliability and uptime for self-hosted runners
-- Seamless operation after host machine restarts or add-on updates
+- Seamless operation after host machine reboots
+- Token required after stopping add-on (expected behavior as runner is unregistered)
 
 ## [1.1.0] - 2025-10-23
 

@@ -153,6 +153,10 @@ cleanup() {
     # Remove the runner
     bashio::log.info "Removing runner..."
     su runner -c "./config.sh remove --token \"${RUNNER_TOKEN}\""
+    
+    # Clear backed-up configuration since runner is being unregistered
+    bashio::log.info "Clearing backed-up runner configuration..."
+    rm -rf "$RUNNER_CONFIG_DIR"
 }
 
 # Set trap to cleanup on exit

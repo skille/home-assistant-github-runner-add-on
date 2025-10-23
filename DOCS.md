@@ -57,12 +57,19 @@ Before using this add-on, you need:
 - **Subsequent restarts**: 
   - Runner configuration is automatically restored from persistent storage
   - No new token required - runner resumes operation seamlessly
-  - Works across add-on restarts, Home Assistant restarts, and host reboots
+  - Works across Home Assistant restarts and host reboots
 - **Configuration storage**: Runner state is stored in `/data/runner-config/` which persists across container restarts
 - **Smart recovery**: If restored configuration is invalid, the add-on will attempt to reconfigure using the configured token
 
+**Important: Stop vs Restart Behavior**:
+- **Stop add-on**: Runner is unregistered from GitHub and configuration is cleared. Requires token for next start.
+- **Restart add-on**: Runner is unregistered and cleared, then re-registered with the configured token on startup.
+- **Home Assistant restart**: Runner configuration persists and resumes automatically (no unregistration).
+- **Host reboot**: Runner configuration persists and resumes automatically (no unregistration).
+
 **When you need a new token**:
-- Initial setup only
+- Initial setup
+- After manually stopping the add-on
 - Changing runner name or repository URL (requires reconfiguration)
 - If runner configuration becomes corrupted (rare)
 
