@@ -37,6 +37,7 @@ CONFIG_FILE="/data/options.json"
 REPO_URL=$(jq -r '.repo_url // empty' "$CONFIG_FILE")
 RUNNER_TOKEN=$(jq -r '.runner_token // empty' "$CONFIG_FILE")
 RUNNER_NAME=$(jq -r '.runner_name // empty' "$CONFIG_FILE")
+RUNNER_LABELS=$(jq -r '.runner_labels // empty' "$CONFIG_FILE")
 DEBUG_LOGGING=$(jq -r '.debug_logging // false' "$CONFIG_FILE")
 
 # Enable debug logging if requested
@@ -106,15 +107,27 @@ chown runner:runner "$RUNNER_CONFIG_DIR"
 # Function to configure the runner
 configure_runner() {
     bashio::log.info "Configuring GitHub Actions Runner..."
+    
+    # Build the config command
+    CONFIG_CMD="./config.sh --url \"${REPO_URL}\" --token \"${RUNNER_TOKEN}\""
+    
+    # Add runner name if specified
     if [ -n "$RUNNER_NAME" ]; then
         bashio::log.info "Using custom runner name: ${RUNNER_NAME}"
-        if ! su runner -c "./config.sh --url \"${REPO_URL}\" --token \"${RUNNER_TOKEN}\" --name \"${RUNNER_NAME}\" --unattended --replace"; then
-            return 1
-        fi
-    else
-        if ! su runner -c "./config.sh --url \"${REPO_URL}\" --token \"${RUNNER_TOKEN}\" --unattended --replace"; then
-            return 1
-        fi
+        CONFIG_CMD="${CONFIG_CMD} --name \"${RUNNER_NAME}\""
+    fi
+    
+    # Add labels if specified
+    if [ -n "$RUNNER_LABELS" ]; then
+        bashio::log.info "Using custom runner labels: ${RUNNER_LABELS}"
+        CONFIG_CMD="${CONFIG_CMD} --labels \"${RUNNER_LABELS}\""
+    fi
+    
+    CONFIG_CMD="${CONFIG_CMD} --unattended --replace"
+    
+    # Execute configuration
+    if ! su runner -c "${CONFIG_CMD}"; then
+        return 1
     fi
     
     # Backup configuration files to persistent storage

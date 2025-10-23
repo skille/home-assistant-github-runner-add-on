@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.4.0] - 2025-10-23
+
+### Added
+- Configurable runner labels via `runner_labels` configuration option
+- Support for comma-separated multiple labels
+- Ability to customize runner labels for better workflow targeting
+- Labels are automatically updated when configuration changes and add-on restarts
+
+### Changed
+- Default labels (self-hosted, Linux, architecture) are now replaceable with custom labels
+- When custom labels are specified, they replace the default labels entirely
+
 ## [1.3.0] - 2025-10-23
 
 ### Added
