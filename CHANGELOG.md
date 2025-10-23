@@ -19,7 +19,6 @@
 - Manual unregistration requires restarting the add-on with a new token to re-register
 
 ## [1.0.7] - 2025-10-22
-## [Unreleased]
 
 ### Added
 - Added URL format validation in run.sh to detect incorrect repository URLs
