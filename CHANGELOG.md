@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.0.6] - 2025-10-22
+## [1.0.8] - 2025-10-22
 
 ### Added
 - Web UI interface with Ingress support for managing the runner
@@ -17,6 +17,8 @@
 ### Notes
 - Web UI is accessible via "OPEN WEB UI" button in Home Assistant add-on page
 - Manual unregistration requires restarting the add-on with a new token to re-register
+
+## [Unreleased]
 
 ## [1.0.5] - 2025-10-22
 
