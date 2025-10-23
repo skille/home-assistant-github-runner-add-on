@@ -39,7 +39,39 @@ Before using this add-on, you need:
 | `repo_url` | string | Yes | The URL of the GitHub repository or organization (e.g., `https://github.com/username/repo`) |
 | `runner_token` | string | Yes | The registration token from GitHub for registering the runner |
 | `runner_name` | string | No | Custom name for the GitHub runner. If not set, GitHub will auto-generate a name (default: auto-generated) |
+| `runner_labels` | string | No | Custom labels for the runner (comma-separated). If not set, defaults to "self-hosted,Linux,X64" (or architecture-specific). Examples: `"custom-label"` or `"label1,label2,label3"` |
 | `debug_logging` | boolean | No | Enable debug/verbose logging for troubleshooting (default: `false`) |
+
+### Runner Labels
+
+**New in v1.4.0**: You can now configure custom labels for your runner!
+
+Runner labels allow you to target specific runners when running GitHub Actions workflows. You can specify which runner to use by matching labels in your workflow files.
+
+**Default Labels**:
+- If no custom labels are specified, the runner will use default labels: `self-hosted`, `Linux`, `X64` (or `ARM`, `ARM64` depending on architecture)
+
+**Custom Labels**:
+- Set custom labels using the `runner_labels` configuration option
+- Multiple labels can be specified as comma-separated values (e.g., `"production,docker,fast"`)
+- When custom labels are set, they **replace** the default labels
+- To keep default labels alongside custom ones, explicitly include them (e.g., `"self-hosted,Linux,X64,custom"`)
+
+**Using Labels in Workflows**:
+
+```yaml
+jobs:
+  my-job:
+    runs-on: [self-hosted, production]  # Will run on runners with both labels
+```
+
+**Label Updates**:
+- To update runner labels after initial configuration:
+  1. Remove the runner from GitHub (Settings → Actions → Runners → Select runner → Remove)
+  2. Update the `runner_labels` configuration in Home Assistant
+  3. Restart the add-on
+  4. The runner will automatically re-register with the new labels
+- The add-on will automatically re-register if it detects the runner was removed from GitHub
 
 ### Logging Features
 
