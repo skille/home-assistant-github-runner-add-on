@@ -46,9 +46,15 @@ jobs:
         run: |
           VERSION="${{ steps.get-version.outputs.version }}"
           # Extract changelog entry for this version
+          # Use sed to extract from version header to next version header or end of file
           CHANGELOG=$(sed -n "/^## \[${VERSION}\]/,/^## \[/p" CHANGELOG.md | sed '$d' | tail -n +2)
           
-          # If changelog is empty, use a default message
+          # If the above didn't work (last entry in changelog), try without the end delimiter
+          if [ -z "$CHANGELOG" ]; then
+            CHANGELOG=$(sed -n "/^## \[${VERSION}\]/,\$p" CHANGELOG.md | tail -n +2)
+          fi
+          
+          # If still empty, use a default message
           if [ -z "$CHANGELOG" ]; then
             CHANGELOG="Release version ${VERSION}"
           fi
