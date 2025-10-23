@@ -38,12 +38,14 @@ Before using this add-on, you need:
 |--------|------|----------|-------------|
 | `repo_url` | string | Yes | The URL of the GitHub repository or organization (e.g., `https://github.com/username/repo`) |
 | `runner_token` | string | Yes | The registration token from GitHub for registering the runner |
+| `runner_name` | string | No | Custom name for the GitHub runner. If not set, GitHub will auto-generate a name (default: auto-generated) |
 | `debug_logging` | boolean | No | Enable debug/verbose logging for troubleshooting (default: `false`) |
 
 ### Runner Behavior
 
 - The runner will automatically register with GitHub when the add-on starts
 - It will appear as "online" in your GitHub repository/organization runners list
+- By default, GitHub auto-generates a runner name. You can specify a custom name using the `runner_name` configuration option for easier identification
 - The runner will process workflow jobs assigned to it
 - When the add-on stops, the runner will automatically unregister from GitHub
 
@@ -67,10 +69,13 @@ The add-on provides a web interface for managing the runner:
 
 #### Runner doesn't appear in GitHub
 
-- Verify that the `repo_url` is correct and includes the full URL
+- Verify that the `repo_url` is correct and includes the full URL:
+  - Repository format: `https://github.com/owner/repo` (no trailing slash)
+  - Organization format: `https://github.com/organization` (no trailing slash)
 - Ensure the `runner_token` hasn't expired (tokens are valid for 1 hour)
 - Check the add-on logs for error messages
 - Enable `debug_logging: true` for more detailed diagnostic information
+- Verify you have admin permissions on the repository/organization
 
 #### Runner shows as offline
 
@@ -78,11 +83,26 @@ The add-on provides a web interface for managing the runner:
 - Verify your network connectivity
 - Check the add-on logs for connection issues
 
-#### Token expired error
+#### Token expired error or 404 Not Found
 
-- Generate a new runner token from GitHub
-- Update the add-on configuration with the new token
-- Restart the add-on
+If you see errors like:
+- `Http response code: NotFound from 'POST https://api.github.com/actions/runner-registration'`
+- `Response status code does not indicate success: 404 (Not Found)`
+
+**Cause**: The registration token has expired (tokens are only valid for 1 hour)
+
+**Solution**:
+1. Generate a new runner token from GitHub:
+   - Repository: Go to Settings → Actions → Runners → New self-hosted runner
+   - Organization: Go to Settings → Actions → Runners → New runner
+2. Copy the registration token shown in the configuration command
+3. Update the add-on configuration with the new token
+4. Restart the add-on immediately (within 1 hour of generating the token)
+
+**Important**: 
+- The token shown on the "New self-hosted runner" page is the registration token (50+ characters)
+- Do NOT use a Personal Access Token (PAT) - it won't work
+- The token expires exactly 1 hour after generation
 
 #### Dependency or startup errors
 
