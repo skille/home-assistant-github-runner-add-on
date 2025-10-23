@@ -53,10 +53,13 @@ Before using this add-on, you need:
 
 #### Runner doesn't appear in GitHub
 
-- Verify that the `repo_url` is correct and includes the full URL
+- Verify that the `repo_url` is correct and includes the full URL:
+  - Repository format: `https://github.com/owner/repo` (no trailing slash)
+  - Organization format: `https://github.com/organization` (no trailing slash)
 - Ensure the `runner_token` hasn't expired (tokens are valid for 1 hour)
 - Check the add-on logs for error messages
 - Enable `debug_logging: true` for more detailed diagnostic information
+- Verify you have admin permissions on the repository/organization
 
 #### Runner shows as offline
 
@@ -64,11 +67,26 @@ Before using this add-on, you need:
 - Verify your network connectivity
 - Check the add-on logs for connection issues
 
-#### Token expired error
+#### Token expired error or 404 Not Found
 
-- Generate a new runner token from GitHub
-- Update the add-on configuration with the new token
-- Restart the add-on
+If you see errors like:
+- `Http response code: NotFound from 'POST https://api.github.com/actions/runner-registration'`
+- `Response status code does not indicate success: 404 (Not Found)`
+
+**Cause**: The registration token has expired (tokens are only valid for 1 hour)
+
+**Solution**:
+1. Generate a new runner token from GitHub:
+   - Repository: Go to Settings → Actions → Runners → New self-hosted runner
+   - Organization: Go to Settings → Actions → Runners → New runner
+2. Copy the registration token shown in the configuration command
+3. Update the add-on configuration with the new token
+4. Restart the add-on immediately (within 1 hour of generating the token)
+
+**Important**: 
+- The token shown on the "New self-hosted runner" page is the registration token (50+ characters)
+- Do NOT use a Personal Access Token (PAT) - it won't work
+- The token expires exactly 1 hour after generation
 
 #### Dependency or startup errors
 
