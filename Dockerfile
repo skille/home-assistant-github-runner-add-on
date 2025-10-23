@@ -13,6 +13,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     tar \
     sudo \
     ca-certificates \
+    python3 \
+    python3-pip \
+    python3-venv \
     && rm -rf /var/lib/apt/lists/*
 
 # Create a non-root user for running the GitHub Actions runner

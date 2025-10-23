@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.5.0] - 2025-10-23
+- Added Python3, pip, and python3-venv to runner environment to support Python-based workflows
+
 ## [1.4.0] - 2025-10-23
 - Added configurable runner labels via `runner_labels` option
 - Custom labels replace default labels when specified
