@@ -1,0 +1,75 @@
+name: Create Release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'config.yaml'
+      - 'CHANGELOG.md'
+
+jobs:
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get version from config.yaml
+        id: get-version
+        run: |
+          VERSION=$(grep -E "^version:" config.yaml | sed 's/version: *"\(.*\)"/\1/')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
+
+      - name: Check if release exists
+        id: check-release
+        run: |
+          VERSION="${{ steps.get-version.outputs.version }}"
+          if gh release view "v${VERSION}" &>/dev/null; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "Release v${VERSION} already exists"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "Release v${VERSION} does not exist"
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Extract changelog for version
+        id: changelog
+        if: steps.check-release.outputs.exists == 'false'
+        run: |
+          VERSION="${{ steps.get-version.outputs.version }}"
+          # Extract changelog entry for this version
+          CHANGELOG=$(sed -n "/^## \[${VERSION}\]/,/^## \[/p" CHANGELOG.md | sed '$d' | tail -n +2)
+          
+          # If changelog is empty, use a default message
+          if [ -z "$CHANGELOG" ]; then
+            CHANGELOG="Release version ${VERSION}"
+          fi
+          
+          # Save to file to preserve formatting
+          echo "$CHANGELOG" > /tmp/release-notes.md
+          echo "Changelog extracted for version ${VERSION}"
+
+      - name: Create GitHub Release
+        if: steps.check-release.outputs.exists == 'false'
+        run: |
+          VERSION="${{ steps.get-version.outputs.version }}"
+          gh release create "v${VERSION}" \
+            --title "v${VERSION}" \
+            --notes-file /tmp/release-notes.md
+          echo "✅ Created release v${VERSION}"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Release already exists
+        if: steps.check-release.outputs.exists == 'true'
+        run: |
+          VERSION="${{ steps.get-version.outputs.version }}"
+          echo "ℹ️ Release v${VERSION} already exists, skipping creation"
