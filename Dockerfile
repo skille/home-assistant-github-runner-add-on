@@ -15,10 +15,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     python3 \
     python3-pip \
+    python3-flask \
     && rm -rf /var/lib/apt/lists/*
-
-# Install Flask for the web UI
-RUN pip3 install --no-cache-dir flask==3.0.0
 
 # Create a non-root user for running the GitHub Actions runner
 RUN useradd -m -u 1000 runner
