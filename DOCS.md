@@ -43,11 +43,28 @@ Before using this add-on, you need:
 
 ### Runner Behavior
 
-- The runner will automatically register with GitHub when the add-on starts
+- The runner will automatically register with GitHub when the add-on starts for the first time
 - It will appear as "online" in your GitHub repository/organization runners list
 - By default, GitHub auto-generates a runner name. You can specify a custom name using the `runner_name` configuration option for easier identification
 - The runner will process workflow jobs assigned to it
 - When the add-on stops, the runner will automatically unregister from GitHub
+
+### Restart and Persistence Behavior
+
+**New in v1.2.0**: The runner configuration now persists across restarts!
+
+- **First-time setup**: Requires a valid registration token (valid for 1 hour)
+- **Subsequent restarts**: 
+  - Runner configuration is automatically restored from persistent storage
+  - No new token required - runner resumes operation seamlessly
+  - Works across add-on restarts, Home Assistant restarts, and host reboots
+- **Configuration storage**: Runner state is stored in `/data/runner-config/` which persists across container restarts
+- **Smart recovery**: If restored configuration is invalid, the add-on will attempt to reconfigure using the configured token
+
+**When you need a new token**:
+- Initial setup only
+- Changing runner name or repository URL (requires reconfiguration)
+- If runner configuration becomes corrupted (rare)
 
 ### Troubleshooting
 
@@ -87,6 +104,7 @@ If you see errors like:
 - The token shown on the "New self-hosted runner" page is the registration token (50+ characters)
 - Do NOT use a Personal Access Token (PAT) - it won't work
 - The token expires exactly 1 hour after generation
+- **You only need a new token for initial setup** - restarts use persisted configuration
 
 #### Dependency or startup errors
 
@@ -127,6 +145,6 @@ You can install multiple instances of this add-on by using different repositorie
 
 ### Limitations
 
-- The runner token must be regenerated each time you want to reconfigure the runner
 - Workflows running on this runner have access to the host network and filesystem (within container boundaries)
 - Resource-intensive workflows may impact Home Assistant performance
+- Changing runner configuration (name, repository) requires a new registration token
