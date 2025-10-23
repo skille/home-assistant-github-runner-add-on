@@ -108,6 +108,8 @@ debug_logging: false
 - ✅ Persistent runner configuration across restarts (no token re-registration needed)
 - ✅ Automatic recovery and resume after host/add-on restarts
 - ✅ Auto-recovery if runner is deleted from GitHub portal
+- ✅ Accurate logging timestamps matching host time (v1.2.1+)
+- ✅ Runner name output in logs for easy identification (v1.2.1+)
 
 ## Troubleshooting
 

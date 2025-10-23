@@ -95,6 +95,14 @@ configure_runner() {
     cp -f .credentials_rsaparams "$RUNNER_CONFIG_DIR/" 2>/dev/null || true
     chown runner:runner "$RUNNER_CONFIG_DIR"/.* 2>/dev/null || true
     
+    # Extract and display the runner name
+    if [ -f ".runner" ]; then
+        CONFIGURED_RUNNER_NAME=$(jq -r '.agentName // empty' .runner 2>/dev/null)
+        if [ -n "$CONFIGURED_RUNNER_NAME" ]; then
+            bashio::log.info "Runner successfully configured with name: ${CONFIGURED_RUNNER_NAME}"
+        fi
+    fi
+    
     return 0
 }
 
@@ -106,6 +114,15 @@ restore_runner_config() {
         cp -f "$RUNNER_CONFIG_DIR/.credentials" . 2>/dev/null || return 1
         cp -f "$RUNNER_CONFIG_DIR/.credentials_rsaparams" . 2>/dev/null || true
         chown runner:runner .runner .credentials .credentials_rsaparams 2>/dev/null || true
+        
+        # Extract and display the runner name
+        if [ -f ".runner" ]; then
+            CONFIGURED_RUNNER_NAME=$(jq -r '.agentName // empty' .runner 2>/dev/null)
+            if [ -n "$CONFIGURED_RUNNER_NAME" ]; then
+                bashio::log.info "Restored runner configuration with name: ${CONFIGURED_RUNNER_NAME}"
+            fi
+        fi
+        
         return 0
     fi
     return 1
@@ -113,7 +130,17 @@ restore_runner_config() {
 
 # Function to start runner with auto-recovery
 start_runner() {
-    bashio::log.info "Starting runner..."
+    # Extract and display the runner name before starting
+    if [ -f ".runner" ]; then
+        CONFIGURED_RUNNER_NAME=$(jq -r '.agentName // empty' .runner 2>/dev/null)
+        if [ -n "$CONFIGURED_RUNNER_NAME" ]; then
+            bashio::log.info "Starting runner with name: ${CONFIGURED_RUNNER_NAME}"
+        else
+            bashio::log.info "Starting runner..."
+        fi
+    else
+        bashio::log.info "Starting runner..."
+    fi
     
     # Try to start the runner
     if su runner -c "./run.sh"; then
