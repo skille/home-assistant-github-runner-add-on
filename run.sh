@@ -3,11 +3,6 @@ set -e
 
 bashio::log.info "Starting GitHub Actions Runner..."
 
-# Start the web UI server in the background
-bashio::log.info "Starting web UI server..."
-python3 /webui/server.py &
-WEB_UI_PID=$!
-
 # Get configuration from Home Assistant options file
 CONFIG_FILE="/data/options.json"
 REPO_URL=$(jq -r '.repo_url // empty' "$CONFIG_FILE")
@@ -112,12 +107,6 @@ fi
 # Cleanup function
 cleanup() {
     bashio::log.info "Cleaning up..."
-    
-    # Stop the web UI server
-    if [ ! -z "$WEB_UI_PID" ]; then
-        bashio::log.info "Stopping web UI server..."
-        kill $WEB_UI_PID 2>/dev/null || true
-    fi
     
     # Remove the runner
     bashio::log.info "Removing runner..."

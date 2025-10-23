@@ -92,16 +92,6 @@ debug_logging: false
 5. Start the add-on
 6. The runner will appear as online in your GitHub repository/organization
 
-## Web UI
-
-The add-on includes a web interface accessible from the Home Assistant interface:
-
-1. After starting the add-on, click "OPEN WEB UI" in the add-on page
-2. The web interface shows the current runner status
-3. Use the "Unregister GitHub Runner" button to manually unregister the runner from GitHub
-
-**Note**: After unregistering the runner manually, you will need to restart the add-on with a new registration token to register it again.
-
 ## Features
 
 - ✅ Self-hosted GitHub Actions runner
@@ -109,7 +99,6 @@ The add-on includes a web interface accessible from the Home Assistant interface
 - ✅ Supports multiple architectures (amd64, aarch64, armhf, armv7, i386)
 - ✅ Automatic cleanup on shutdown
 - ✅ Easy configuration through Home Assistant UI
-- ✅ Web UI with button to unregister the runner on demand
 
 ## Troubleshooting
 

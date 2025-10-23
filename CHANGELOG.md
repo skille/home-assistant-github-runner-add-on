@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.1.0] - 2025-10-23
+
+### Removed
+- Removed Web UI feature including the unregister button interface
+- Removed Flask web server and Python dependencies from Docker image
+- Removed Ingress configuration from add-on settings
+- Removed `/webui/` directory and all associated files
+
+### Changed
+- Runner unregistration is now only available through the automatic cleanup on add-on shutdown
+- Reduced Docker image size by removing Python 3, pip, and Flask dependencies
+
+### Notes
+- The backend functionality for unregistering the runner still works automatically when the add-on stops
+- Manual unregistration can be performed using the GitHub API or CLI if needed
+- This change improves the add-on's focus on core runner functionality
+
 ## [1.0.9] - 2025-10-23
 
 ### Fixed
