@@ -37,14 +37,13 @@ The registration token for the GitHub Actions runner. You can generate this toke
 
 **Important Notes**:
 - The token is **valid for only 1 hour** after generation
-- The token is needed for **initial setup** and after **stopping the add-on**
-- **Runner configuration persists across Home Assistant restarts and host reboots** - no new token is needed
-- On Home Assistant/host restart, the add-on automatically restores the runner configuration
-- **Note**: Stopping the add-on unregisters the runner from GitHub. Restarting requires the token for re-registration.
-- Generate a new token if:
+- The token is only needed for **initial setup** (or if automatic re-registration fails)
+- **Runner configuration persists across all restarts** - no new token needed
+- On restart, the add-on automatically restores and resumes the runner
+- **Auto-recovery**: If runner was deleted from GitHub portal, it's automatically re-registered using the configured token
+- Generate a new token only if:
   - Setting up the runner for the first time
-  - After manually stopping the add-on (Stop button in Home Assistant)
-  - The runner configuration was lost or corrupted
+  - Automatic re-registration fails (token expired)
   - You want to change the runner name or repository
 - The token is a long string (typically 50+ characters) starting with letters and containing alphanumeric characters
 
@@ -108,6 +107,7 @@ debug_logging: false
 - ✅ Easy configuration through Home Assistant UI
 - ✅ Persistent runner configuration across restarts (no token re-registration needed)
 - ✅ Automatic recovery and resume after host/add-on restarts
+- ✅ Auto-recovery if runner is deleted from GitHub portal
 
 ## Troubleshooting
 

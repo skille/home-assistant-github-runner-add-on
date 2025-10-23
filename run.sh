@@ -111,23 +111,43 @@ restore_runner_config() {
     return 1
 }
 
-# Try to restore existing configuration
-RUNNER_CONFIGURED=false
-if restore_runner_config; then
-    bashio::log.info "Runner configuration restored. Validating..."
+# Function to start runner with auto-recovery
+start_runner() {
+    bashio::log.info "Starting runner..."
     
-    # Test if the restored configuration is valid by checking the .runner file
-    if su runner -c "cat .runner" > /dev/null 2>&1; then
-        bashio::log.info "Existing runner configuration is valid. Runner will resume without re-registration."
-        RUNNER_CONFIGURED=true
+    # Try to start the runner
+    if su runner -c "./run.sh"; then
+        return 0
     else
-        bashio::log.warning "Restored configuration appears invalid. Will reconfigure..."
-        rm -f .runner .credentials .credentials_rsaparams 2>/dev/null || true
+        EXIT_CODE=$?
+        bashio::log.warning "Runner exited with code $EXIT_CODE"
+        
+        # If runner failed and we have a persisted config, it might have been deleted from GitHub
+        # Try to re-register
+        if [ -f ".runner" ]; then
+            bashio::log.info "Attempting to re-register runner (may have been deleted from GitHub portal)..."
+            rm -f .runner .credentials .credentials_rsaparams 2>/dev/null || true
+            
+            if configure_runner; then
+                bashio::log.info "Runner re-registered successfully! Starting runner..."
+                su runner -c "./run.sh"
+                return $?
+            else
+                bashio::log.error "Failed to re-register runner. Please check token and configuration."
+                return 1
+            fi
+        fi
+        
+        return $EXIT_CODE
     fi
-fi
+}
 
-# If no valid configuration exists, configure the runner
-if [ "$RUNNER_CONFIGURED" = false ]; then
+# Try to restore existing configuration
+if restore_runner_config; then
+    bashio::log.info "Found existing runner configuration. Will attempt to use it."
+else
+    # No existing configuration - first-time setup
+    bashio::log.info "No existing runner configuration found. Registering new runner..."
     if ! configure_runner; then
         bashio::log.error "Failed to configure runner. Common causes:"
         bashio::log.error "  1. Registration token expired (valid for 1 hour only)"
@@ -146,22 +166,5 @@ if [ "$RUNNER_CONFIGURED" = false ]; then
     bashio::log.info "Runner configured successfully!"
 fi
 
-# Cleanup function
-cleanup() {
-    bashio::log.info "Cleaning up..."
-    
-    # Remove the runner
-    bashio::log.info "Removing runner..."
-    su runner -c "./config.sh remove --token \"${RUNNER_TOKEN}\""
-    
-    # Clear backed-up configuration since runner is being unregistered
-    bashio::log.info "Clearing backed-up runner configuration..."
-    rm -rf "$RUNNER_CONFIG_DIR"
-}
-
-# Set trap to cleanup on exit
-trap cleanup EXIT
-
-# Start the runner as the runner user
-bashio::log.info "Starting runner..."
-su runner -c "./run.sh"
+# Start the runner (with auto-recovery if needed)
+start_runner

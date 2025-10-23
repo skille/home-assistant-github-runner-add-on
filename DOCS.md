@@ -56,22 +56,22 @@ Before using this add-on, you need:
 - **First-time setup**: Requires a valid registration token (valid for 1 hour)
 - **Subsequent restarts**: 
   - Runner configuration is automatically restored from persistent storage
+  - Runner attempts to resume with existing configuration
   - No new token required - runner resumes operation seamlessly
-  - Works across Home Assistant restarts and host reboots
+  - Works across add-on restarts, Home Assistant restarts, and host reboots
 - **Configuration storage**: Runner state is stored in `/data/runner-config/` which persists across container restarts
-- **Smart recovery**: If restored configuration is invalid, the add-on will attempt to reconfigure using the configured token
+- **Auto-recovery**: If the runner was manually deleted from GitHub portal, it will automatically re-register using the configured token
 
-**Important: Stop vs Restart Behavior**:
-- **Stop add-on**: Runner is unregistered from GitHub and configuration is cleared. Requires token for next start.
-- **Restart add-on**: Runner is unregistered and cleared, then re-registered with the configured token on startup.
-- **Home Assistant restart**: Runner configuration persists and resumes automatically (no unregistration).
-- **Host reboot**: Runner configuration persists and resumes automatically (no unregistration).
+**Runner Lifecycle**:
+- **Stop/Restart add-on**: Runner configuration persists. On restart, runner resumes automatically.
+- **Home Assistant restart**: Runner configuration persists and resumes automatically.
+- **Host reboot**: Runner configuration persists and resumes automatically.
+- **Runner deleted in GitHub portal**: Automatically detected and re-registered on next start.
 
 **When you need a new token**:
-- Initial setup
-- After manually stopping the add-on
-- Changing runner name or repository URL (requires reconfiguration)
-- If runner configuration becomes corrupted (rare)
+- Initial setup only
+- If automatic re-registration fails (token expired)
+- Changing runner name or repository URL (requires manual reconfiguration)
 
 ### Troubleshooting
 

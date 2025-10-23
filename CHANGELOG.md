@@ -3,28 +3,28 @@
 ## [1.2.0] - 2025-10-23
 
 ### Added
-- Automatic runner configuration persistence across Home Assistant and host restarts
-- Runner state files (`.runner`, `.credentials`) are now backed up to `/data/runner-config/` for persistence
-- Automatic restoration of runner configuration on HA/host restart, eliminating the need for re-registration
-- Smart restart logic that only reconfigures when necessary
-- Cleanup of backed-up configuration when add-on is stopped to prevent stale credentials
+- Automatic runner configuration persistence across all restarts (add-on, Home Assistant, host)
+- Runner state files (`.runner`, `.credentials`) are backed up to `/data/runner-config/` for persistence
+- Automatic restoration of runner configuration on restart
+- Smart auto-recovery: If runner is deleted from GitHub portal, automatically re-registers using configured token
+- Runner is never unregistered on stop/restart - configuration always persists
 
 ### Changed
-- Runner now resumes operation after Home Assistant or host restarts without requiring a new token
-- Registration token is needed for initial setup and after manually stopping the add-on
-- Improved startup flow: restore existing configuration → validate → only reconfigure if needed
-- Stopping the add-on now clears backed-up configuration (runner is unregistered)
+- Runner now persists across all stop/restart scenarios
+- No manual unregistration needed - users can delete runners directly in GitHub portal
+- Registration token only needed for initial setup (or if auto-recovery fails due to expired token)
+- Improved startup flow: restore configuration → start runner → auto-recover if needed
 
 ### Fixed
-- Fixed issue where runner would fail to start after Home Assistant/host restart due to expired registration token
-- Runner now reliably resumes operation after HA/host restarts without manual intervention
-- Prevented stale configuration from being restored after add-on stop/restart cycles
+- Fixed issue where runner would fail after restarts due to expired token
+- Eliminated need for manual intervention after restarts
+- Runner automatically handles being deleted from GitHub portal
 
 ### Impact
-- Users no longer need to generate new tokens after Home Assistant or host restarts
-- Improved reliability and uptime for self-hosted runners
-- Seamless operation after host machine reboots
-- Token required after stopping add-on (expected behavior as runner is unregistered)
+- Users only need token for initial setup
+- Improved reliability and uptime
+- Seamless operation across all restart scenarios
+- Runners can be managed entirely from GitHub portal
 
 ## [1.1.0] - 2025-10-23
 
