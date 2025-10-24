@@ -11,10 +11,13 @@ We welcome contributions! Please follow these guidelines.
 5. Update `CHANGELOG.md`
 6. Test thoroughly
 7. Submit a pull request
+8. Upon merge to main, a GitHub release is automatically created
 
 ## 🚨 Version Bump (Required)
 
 **Every PR to main must bump version in `config.yaml`**
+
+When your PR is merged to main, a GitHub release is automatically created with the new version tag (e.g., `v1.4.0`).
 
 ### Semantic Versioning
 
@@ -72,6 +75,19 @@ Before submitting:
 - [ ] Documentation follows concise pattern
 - [ ] Changes tested locally
 - [ ] No hardcoded secrets
+
+## Release Process
+
+Releases are created automatically when PRs are merged to main:
+
+1. Version bump workflow verifies version is greater than main
+2. PR is merged to main
+3. Release workflow automatically creates a GitHub release with:
+   - Tag: `v{version}` (e.g., `v1.4.0`)
+   - Release notes: Extracted from `CHANGELOG.md` for that version
+4. Home Assistant users can update to the new release
+
+You don't need to manually create releases - the automation handles it.
 
 ## Code Style
 

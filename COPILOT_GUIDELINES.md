@@ -96,6 +96,19 @@ Guidelines for contributors using AI tools to work on this project.
 - Enforced by automated CI checks
 - New version must be greater than main branch version
 - Follow semantic versioning: MAJOR.MINOR.PATCH
+- Upon merge to main, a GitHub release is automatically created
+
+### Release Process
+
+When PRs are merged to main:
+
+1. Version bump workflow verifies version increase
+2. Release workflow automatically creates GitHub release:
+   - Tag: `v{version}` (e.g., `v1.4.0`)
+   - Release notes: Extracted from `CHANGELOG.md`
+3. Users receive updates via Home Assistant
+
+You don't manually create releases - automation handles it.
 
 ### Version Guidelines
 

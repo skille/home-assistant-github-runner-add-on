@@ -12,6 +12,8 @@ Run a self-hosted GitHub Actions runner directly within your Home Assistant inst
 3. Configure the add-on (see below)
 4. Start the add-on
 
+**Note:** This add-on uses [GitHub Releases][releases] for versioning. Each version corresponds to a release tag (e.g., `v1.4.0`). Home Assistant will automatically detect and offer updates when new releases are published.
+
 ## Configuration
 
 ### Required Options
@@ -69,7 +71,7 @@ Got questions or issues? Please open an issue on the [GitHub repository][github]
 
 This is an active open-source project. We welcome contributions!
 
-**Important**: All pull requests to the main branch must include a version bump in `config.yaml`. This is enforced by automated checks. See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+**Important**: All pull requests to the main branch must include a version bump in `config.yaml`. This is enforced by automated checks. When merged to main, a GitHub release is automatically created with the new version. See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
 ### Quick Contribution Guidelines
 
@@ -79,8 +81,9 @@ This is an active open-source project. We welcome contributions!
 4. **Bump the version in `config.yaml`** (must be greater than current main version)
 5. Update `CHANGELOG.md` with your changes
 6. Submit a pull request
+7. Upon merge, a release is automatically created
 
-For detailed contribution guidelines, versioning rules, and development workflow, see [CONTRIBUTING.md](CONTRIBUTING.md).
+For detailed contribution guidelines, versioning rules, and release workflow, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
