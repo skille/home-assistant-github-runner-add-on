@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.5.1] - 2025-10-24
+- Added unzip utility to support Terraform setup and other workflows requiring archive extraction
+
 ## [1.5.0] - 2025-10-23
 - Added Python3, pip, and python3-venv to runner environment to support Python-based workflows
 
