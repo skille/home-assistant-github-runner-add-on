@@ -1,5 +1,8 @@
 # Changelog
 
+## [1.5.2] - 2025-10-24
+- Added Node.js and npm to support GitHub Actions composite actions (fixes setup-terraform and similar actions)
+
 ## [1.5.1] - 2025-10-24
 - Added unzip utility to support Terraform setup and other workflows requiring archive extraction
 
